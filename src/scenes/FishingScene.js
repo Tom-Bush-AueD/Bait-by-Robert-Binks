@@ -429,11 +429,16 @@ export default class FishingScene extends Phaser.Scene {
       return;
     }
 
+    // Gear helps offset harsh conditions (night/storm)
+    const isHarsh = weather.id === 'stormy' || timePeriod.id === 'night';
+    const gearHarshBonus = isHarsh ? (bonuses.biteSpeedBonus * 0.5 + (bonuses.rarityBonus > 0 ? 0.15 : 0)) : 0;
+
     // Roll for bite with bonuses
     const effectiveBiteChance = Math.min(1, species.biteChance
       + bonuses.biteBonus
       + (weather.biteModifier - 1) * 0.3
       + (timePeriod.biteModifier - 1) * 0.3
+      + gearHarshBonus
     );
     const biteRoll = Math.random();
     if (biteRoll > effectiveBiteChance) {

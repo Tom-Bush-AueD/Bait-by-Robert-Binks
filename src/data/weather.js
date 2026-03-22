@@ -44,9 +44,9 @@ export const WEATHER_TYPES = [
     id: 'stormy',
     name: 'Stormy',
     icon: 'STM',
-    biteModifier: 0.85,
+    biteModifier: 0.7,
     rarityModifier: 1.5,
-    castModifier: 0.85,
+    castModifier: 0.75,
     description: 'Dangerous conditions. Rare fish appear.',
     skyTint: 0x222233,
     skyAlpha: 0.5,
@@ -74,7 +74,7 @@ export const TIME_PERIODS = [
   { id: 'noon', name: 'Noon', hour: 12, biteModifier: 0.8, rarityModifier: 0.9, skyColor: 0xFFFF88, skyAlpha: 0.05 },
   { id: 'afternoon', name: 'Afternoon', hour: 15, biteModifier: 1.0, rarityModifier: 1.0, skyColor: 0x000000, skyAlpha: 0 },
   { id: 'dusk', name: 'Dusk', hour: 18, biteModifier: 1.25, rarityModifier: 1.3, skyColor: 0xFF6644, skyAlpha: 0.25 },
-  { id: 'night', name: 'Night', hour: 21, biteModifier: 0.85, rarityModifier: 1.5, skyColor: 0x111133, skyAlpha: 0.45 }
+  { id: 'night', name: 'Night', hour: 21, biteModifier: 0.6, rarityModifier: 1.5, skyColor: 0x111133, skyAlpha: 0.45 }
 ];
 
 // In-game clock: 1 real second = 4 in-game minutes

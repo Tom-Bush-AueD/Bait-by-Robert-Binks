@@ -15,7 +15,7 @@ export const GEAR = {
       id: 'fiber_rod',
       name: 'Fiberglass Rod',
       description: 'Lighter and more flexible. Better casts.',
-      price: 150,
+      price: 80,
       castBonus: 0.1,
       reelSpeed: 1.15,
       tensionRange: 1.1
@@ -52,7 +52,7 @@ export const GEAR = {
       id: 'braided_line',
       name: 'Braided Line',
       description: 'Stronger and less stretch.',
-      price: 100,
+      price: 60,
       strengthBonus: 0.1,
       snapThreshold: 0.97
     },
@@ -115,7 +115,7 @@ export const GEAR = {
       id: 'weight_sinker',
       name: 'Lead Sinker',
       description: 'Cast further. Reach deeper fish.',
-      price: 50,
+      price: 30,
       castDistBonus: 50
     },
     {

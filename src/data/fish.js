@@ -87,9 +87,9 @@ export const FISH_SPECIES = [
     rarity: 'legendary',
     color: 0xFFCC33,
     accentColor: 0xFF9900,
-    strength: 0.75,
+    strength: 0.8,
     stamina: 0.8,
-    biteChance: 0.3,
+    biteChance: 0.25,
     biteDelay: [5000, 10000],
     description: 'A mythical golden fish. Incredibly rare.'
   }
