@@ -15,7 +15,7 @@ export const CREW_MEMBERS = [
     name: 'Marina',
     title: 'Marine Biologist',
     description: 'Knows where rare fish hide. Boosts rarity.',
-    price: 600,
+    price: 400,
     bonus: { rarityBonus: 0.2 },
     color: 0x4488AA
   },
@@ -33,7 +33,7 @@ export const CREW_MEMBERS = [
     name: 'Lucky Lin',
     title: 'Fortune Teller',
     description: 'Brings good luck. Better sell prices.',
-    price: 800,
+    price: 500,
     bonus: { sellBonus: 0.25 },
     color: 0xCC44AA
   },
@@ -42,7 +42,7 @@ export const CREW_MEMBERS = [
     name: 'Weather Wes',
     title: 'Meteorologist',
     description: 'Predicts weather changes. Extended forecast.',
-    price: 500,
+    price: 350,
     bonus: { forecastBonus: true },
     color: 0x5599CC
   }

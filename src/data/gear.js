@@ -24,7 +24,7 @@ export const GEAR = {
       id: 'carbon_rod',
       name: 'Carbon Fiber Rod',
       description: 'Professional grade. Excellent control.',
-      price: 500,
+      price: 400,
       castBonus: 0.2,
       reelSpeed: 1.3,
       tensionRange: 1.25
@@ -33,7 +33,7 @@ export const GEAR = {
       id: 'master_rod',
       name: 'Master Angler Rod',
       description: 'The finest rod money can buy.',
-      price: 1500,
+      price: 800,
       castBonus: 0.3,
       reelSpeed: 1.5,
       tensionRange: 1.4
@@ -69,7 +69,7 @@ export const GEAR = {
       id: 'steel_line',
       name: 'Steel Leader Line',
       description: 'Unbreakable. For the biggest catches.',
-      price: 800,
+      price: 500,
       strengthBonus: 0.25,
       snapThreshold: 0.99
     }
@@ -129,7 +129,7 @@ export const GEAR = {
       id: 'fish_finder',
       name: 'Fish Finder',
       description: 'Shows fish activity. Shorter bite wait.',
-      price: 400,
+      price: 250,
       biteSpeedBonus: 0.3
     }
   ]
@@ -137,8 +137,8 @@ export const GEAR = {
 
 // Fish sale prices by rarity
 export const SELL_PRICES = {
-  common: { base: 5, perKg: 8 },
-  uncommon: { base: 15, perKg: 15 },
+  common: { base: 8, perKg: 12 },
+  uncommon: { base: 20, perKg: 18 },
   rare: { base: 40, perKg: 25 },
   legendary: { base: 100, perKg: 50 }
 };

@@ -83,14 +83,14 @@ export const FISH_SPECIES = [
   {
     name: 'Golden Carp',
     minWeight: 4.0, maxWeight: 15.0,
-    minDist: 350, maxDist: 450,
+    minDist: 280, maxDist: 450,
     rarity: 'legendary',
     color: 0xFFCC33,
     accentColor: 0xFF9900,
-    strength: 0.9,
-    stamina: 0.9,
-    biteChance: 0.15,
-    biteDelay: [8000, 15000],
+    strength: 0.75,
+    stamina: 0.8,
+    biteChance: 0.3,
+    biteDelay: [5000, 10000],
     description: 'A mythical golden fish. Incredibly rare.'
   }
 ];
