@@ -13,7 +13,7 @@ export default class CatchScene extends Phaser.Scene {
     this.caughtFish = data.fish;
     this.saveData = data.saveData;
     this.isNewRecord = data.isNewRecord || false;
-    this.extraAchievements = data.extraAchievements || [];
+    this.newAchievements = data.newAchievements || [];
   }
 
   create() {
@@ -114,10 +114,11 @@ export default class CatchScene extends Phaser.Scene {
     }).setOrigin(0.5);
     nextY += 28;
 
-    // Extra achievements summary (if any)
-    if (this.extraAchievements.length > 0) {
-      const names = this.extraAchievements.map(a => a.name).join(', ');
-      this.add.text(cx, nextY, `+${this.extraAchievements.length} more: ${names}`, {
+    // Achievements earned this catch
+    if (this.newAchievements.length > 0) {
+      const names = this.newAchievements.map(a => a.name).join(', ');
+      const label = this.newAchievements.length === 1 ? 'Achievement' : 'Achievements';
+      this.add.text(cx, nextY, `${label}: ${names}`, {
         fontFamily: 'Arial, sans-serif',
         fontSize: '15px',
         fontStyle: 'bold',

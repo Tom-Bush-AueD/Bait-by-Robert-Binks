@@ -689,31 +689,26 @@ export default class FishingScene extends Phaser.Scene {
 
     audio.playCatch();
 
-    // Check achievements — only show the top 1 as popup, pass rest to CatchScene
+    // Check achievements — unlock all, but don't show popups here.
+    // Pass them all to CatchScene for a clean summary display.
     const newAchievements = checkAchievements(this.saveData);
-    const extraAchievements = [];
-    newAchievements.forEach((ach, i) => {
+    newAchievements.forEach(ach => {
       this.saveData.achievements.push(ach.id);
-      if (i === 0) {
-        // Show only the most important achievement as a popup
-        this.achievementPopup.show(ach);
-        audio.playAchievement();
-      } else {
-        extraAchievements.push(ach);
-      }
     });
 
     // Auto-save
     saveGame(this.saveData);
 
-    // Transition to catch scene
-    this.cameras.main.fadeOut(400, 0, 0, 0);
-    this.cameras.main.once('camerafadeoutcomplete', () => {
-      this.scene.start('CatchScene', {
-        fish: this.currentFish,
-        saveData: this.saveData,
-        isNewRecord,
-        extraAchievements
+    // Quick transition to catch scene (no popup delay)
+    this.time.delayedCall(600, () => {
+      this.cameras.main.fadeOut(300, 0, 0, 0);
+      this.cameras.main.once('camerafadeoutcomplete', () => {
+        this.scene.start('CatchScene', {
+          fish: this.currentFish,
+          saveData: this.saveData,
+          isNewRecord,
+          newAchievements
+        });
       });
     });
   }
