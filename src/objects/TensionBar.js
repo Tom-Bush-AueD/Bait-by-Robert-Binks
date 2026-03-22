@@ -24,10 +24,16 @@ export default class TensionBar {
     this.fishStamina = 0.5;
     this.fishEnergy = 1.0; // depletes as fight goes on
 
+    // Gear bonuses
+    this.reelSpeedMult = 1.0;
+    this.tensionRangeMult = 1.0;
+    this.reelBonus = 0;
+    this.tensionStability = 0;
+
     // Fight behavior
     this.pullTimer = 0;
-    this.pullDirection = 0; // -1 = toward player, 0 = neutral, 1 = away
-    this.pullInterval = 1500; // ms between direction changes
+    this.pullDirection = 0;
+    this.pullInterval = 1500;
     this.surgeTimer = 0;
     this.isSurging = false;
 
@@ -54,7 +60,7 @@ export default class TensionBar {
     }).setOrigin(0.5).setDepth(15).setVisible(false);
   }
 
-  configure(fishInstance) {
+  configure(fishInstance, bonuses = {}) {
     this.fishStrength = fishInstance.strength;
     this.fishStamina = fishInstance.stamina;
     this.fishEnergy = 1.0;
@@ -65,6 +71,17 @@ export default class TensionBar {
     this.isSurging = false;
     this.pullDirection = 0;
     this.pullInterval = 1200 + Math.random() * 800;
+
+    // Apply gear bonuses
+    this.reelSpeedMult = bonuses.reelSpeed || 1.0;
+    this.tensionRangeMult = bonuses.tensionRange || 1.0;
+    this.snapThreshold = bonuses.snapThreshold || 0.95;
+    this.reelBonus = bonuses.reelBonus || 0;
+    this.tensionStability = bonuses.tensionStability || 0;
+
+    // Line strength reduces effective fish strength
+    const lineStrength = bonuses.lineStrength || 0;
+    this.fishStrength = Math.max(0.1, this.fishStrength - lineStrength);
   }
 
   show() {
@@ -92,24 +109,21 @@ export default class TensionBar {
       this.pullTimer = 0;
       this.pullInterval = 800 + Math.random() * 1200;
 
-      // Random pull direction
       const rand = Math.random();
       if (rand < 0.4) {
-        this.pullDirection = 1;  // pull away (increases tension)
+        this.pullDirection = 1;
       } else if (rand < 0.7) {
-        this.pullDirection = -1; // swim toward (decreases tension)
+        this.pullDirection = -1;
       } else {
-        this.pullDirection = 0;  // neutral
+        this.pullDirection = 0;
       }
 
-      // Occasional surges based on fish strength
       if (Math.random() < this.fishStrength * 0.4 * this.fishEnergy) {
         this.isSurging = true;
         this.surgeTimer = 400 + Math.random() * 600;
       }
     }
 
-    // Surge countdown
     if (this.isSurging) {
       this.surgeTimer -= delta;
       if (this.surgeTimer <= 0) this.isSurging = false;
@@ -118,19 +132,20 @@ export default class TensionBar {
     // Calculate tension changes
     const fishPull = this.pullDirection * this.fishStrength * this.fishEnergy * 0.6;
     const surgeMult = this.isSurging ? 2.0 : 1.0;
+    // Tension stability from gear reduces fish pull effect
+    const stabilityMod = 1 - this.tensionStability;
 
-    // Natural tension from fish movement
-    this.tension += fishPull * surgeMult * dt;
+    this.tension += fishPull * surgeMult * stabilityMod * dt;
 
     // Reeling increases tension and progress
     if (isReeling) {
-      this.tension += 0.4 * dt;
-      // Progress depends on tension being in a good range
+      this.tension += 0.4 * dt * this.reelSpeedMult;
       const tensionQuality = 1 - Math.abs(this.tension - 0.5) * 2;
-      const progressRate = 0.12 * Math.max(0, tensionQuality) * (1 + (1 - this.fishEnergy) * 0.5);
+      // Better reel speed from gear and crew
+      const progressRate = 0.12 * (1 + this.reelBonus) * this.reelSpeedMult
+        * Math.max(0, tensionQuality) * (1 + (1 - this.fishEnergy) * 0.5);
       this.reelProgress += progressRate * dt;
     } else {
-      // Line slowly goes slack when not reeling
       this.tension -= 0.25 * dt;
     }
 
@@ -138,17 +153,14 @@ export default class TensionBar {
     this.tension = Math.max(0, Math.min(1, this.tension));
     this.reelProgress = Math.max(0, Math.min(1, this.reelProgress));
 
-    // Update progress label
     const pct = Math.floor(this.reelProgress * 100);
     this.progressLabel.setText(`Reeling in: ${pct}%`);
 
     this.draw();
 
-    // Check win/lose conditions
     if (this.reelProgress >= 1) return 'caught';
     if (this.tension >= this.snapThreshold) return 'snapped';
     if (this.tension <= this.slackThreshold && !isReeling && this.pullDirection === -1) {
-      // Only escape if slack for a while — give player a chance
       return 'reeling';
     }
 
@@ -165,8 +177,8 @@ export default class TensionBar {
     // Danger zones (red edges)
     const dangerWidth = this.barWidth * 0.15;
     this.gfx.fillStyle(0xCC4444, 0.4);
-    this.gfx.fillRect(this.x, this.y, dangerWidth, this.barHeight); // too slack
-    this.gfx.fillRect(this.x + this.barWidth - dangerWidth, this.y, dangerWidth, this.barHeight); // too tight
+    this.gfx.fillRect(this.x, this.y, dangerWidth, this.barHeight);
+    this.gfx.fillRect(this.x + this.barWidth - dangerWidth, this.y, dangerWidth, this.barHeight);
 
     // Safe zone (green center)
     this.gfx.fillStyle(0x44BB44, 0.2);
@@ -174,11 +186,11 @@ export default class TensionBar {
 
     // Tension indicator
     const indicatorX = this.x + this.tension * this.barWidth;
-    let indicatorColor = 0x44FF44; // green = safe
+    let indicatorColor = 0x44FF44;
     if (this.tension > 0.8 || this.tension < 0.15) {
-      indicatorColor = 0xFF4444; // red = danger
+      indicatorColor = 0xFF4444;
     } else if (this.tension > 0.65 || this.tension < 0.25) {
-      indicatorColor = 0xFFAA44; // orange = warning
+      indicatorColor = 0xFFAA44;
     }
 
     this.gfx.fillStyle(indicatorColor, 1);
@@ -188,7 +200,7 @@ export default class TensionBar {
     this.gfx.lineStyle(2, 0x444466, 1);
     this.gfx.strokeRect(this.x, this.y, this.barWidth, this.barHeight);
 
-    // Progress bar (below tension bar)
+    // Progress bar
     const progBarY = this.y + this.barHeight + 4;
     const progBarH = 6;
     this.gfx.fillStyle(0x1A1A2E, 0.7);

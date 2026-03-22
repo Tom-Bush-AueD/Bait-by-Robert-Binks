@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { COLORS, ROD_CONFIG, CAST, CAST_ARC, WATER_LINE_Y } from '../constants.js';
+import { audio } from './AudioManager.js';
 
 export default class FishingRod {
   constructor(scene) {
@@ -143,6 +144,7 @@ export default class FishingRod {
         this.drawLine();
 
         // Splash effect
+        audio.playSplash();
         this.playSplash(landingX, landingY);
 
         if (onComplete) onComplete(distance);

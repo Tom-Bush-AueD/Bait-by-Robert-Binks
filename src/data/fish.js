@@ -102,20 +102,25 @@ export const RARITY_COLORS = {
   legendary: '#FFAA00'
 };
 
-// Select a fish based on cast distance
-export function selectFish(castDistance) {
+// Select a fish based on cast distance and optional rarity bonus
+export function selectFish(castDistance, rarityBonus = 0) {
   const candidates = FISH_SPECIES.filter(
     f => castDistance >= f.minDist && castDistance <= f.maxDist
   );
 
   if (candidates.length === 0) return candidates[0] || FISH_SPECIES[0];
 
-  // Weight by bite chance (common fish bite more)
-  const totalWeight = candidates.reduce((sum, f) => sum + f.biteChance, 0);
+  // Weight by bite chance — rarity bonus shifts weight toward rarer fish
+  const rarityWeights = { common: 1, uncommon: 1.5, rare: 2.5, legendary: 4 };
+  const totalWeight = candidates.reduce((sum, f) => {
+    const rarityMult = 1 + rarityBonus * (rarityWeights[f.rarity] || 1);
+    return sum + f.biteChance * rarityMult;
+  }, 0);
   let roll = Math.random() * totalWeight;
 
   for (const fish of candidates) {
-    roll -= fish.biteChance;
+    const rarityMult = 1 + rarityBonus * (rarityWeights[fish.rarity] || 1);
+    roll -= fish.biteChance * rarityMult;
     if (roll <= 0) return fish;
   }
 
