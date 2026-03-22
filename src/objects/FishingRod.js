@@ -191,6 +191,32 @@ export default class FishingRod {
     });
   }
 
+  playLineSnap() {
+    // Quick visual: line recoils to rod tip
+    const startX = this.hookX;
+    const startY = this.hookY;
+    const counter = { t: 0 };
+
+    this.bobberVisible = false;
+
+    this.scene.tweens.add({
+      targets: counter,
+      t: 1,
+      duration: 200,
+      ease: 'Quad.easeIn',
+      onUpdate: () => {
+        this.lineGfx.clear();
+        const cx = Phaser.Math.Linear(startX, this.tipX, counter.t);
+        const cy = Phaser.Math.Linear(startY, this.tipY, counter.t);
+        this.lineGfx.lineStyle(1, COLORS.LINE, 1 - counter.t);
+        this.lineGfx.lineBetween(this.tipX, this.tipY, cx, cy);
+      },
+      onComplete: () => {
+        this.lineGfx.clear();
+      }
+    });
+  }
+
   reset() {
     this.bobberVisible = false;
     this.casting = false;

@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME } from './constants.js';
 import BootScene from './scenes/BootScene.js';
 import FishingScene from './scenes/FishingScene.js';
+import CatchScene from './scenes/CatchScene.js';
 
 export default {
   type: Phaser.AUTO,
@@ -9,5 +10,5 @@ export default {
   height: GAME.HEIGHT,
   parent: 'game-container',
   backgroundColor: '#1a1a2e',
-  scene: [BootScene, FishingScene]
+  scene: [BootScene, FishingScene, CatchScene]
 };
