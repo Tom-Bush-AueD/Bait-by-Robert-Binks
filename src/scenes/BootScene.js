@@ -30,7 +30,7 @@ export default class BootScene extends Phaser.Scene {
     // Subtitle
     this.add.text(cx, cy - 10, 'A Fishing Simulation', {
       fontFamily: 'Georgia, "Times New Roman", serif',
-      fontSize: '20px',
+      fontSize: '22px',
       color: '#C2B280'
     }).setOrigin(0.5);
 
@@ -43,14 +43,14 @@ export default class BootScene extends Phaser.Scene {
       const uniqueSpecies = Object.keys(saveData.encyclopedia).filter(k => saveData.encyclopedia[k]?.caught).length;
       this.add.text(cx, cy + 30, `${saveData.stats.totalCatches} catches | ${uniqueSpecies}/7 species | ${saveData.money} coins`, {
         fontFamily: 'Arial, sans-serif',
-        fontSize: '13px',
+        fontSize: '15px',
         color: '#7777AA'
       }).setOrigin(0.5);
 
       // Continue button
       const continueBtn = this.add.text(cx, cy + 65, 'Continue', {
         fontFamily: 'Arial, sans-serif',
-        fontSize: '20px',
+        fontSize: '22px',
         fontStyle: 'bold',
         color: '#88AACC',
         stroke: '#000000',
@@ -70,25 +70,36 @@ export default class BootScene extends Phaser.Scene {
       // New game option
       const newBtn = this.add.text(cx, cy + 100, 'New Game', {
         fontFamily: 'Arial, sans-serif',
-        fontSize: '14px',
+        fontSize: '16px',
         color: '#666688'
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
       newBtn.on('pointerdown', () => {
         const fresh = resetSave();
-        this.startGame(fresh);
+        this.startTutorial(fresh);
       });
       newBtn.on('pointerover', () => newBtn.setColor('#FF6644'));
       newBtn.on('pointerout', () => newBtn.setColor('#666688'));
 
-      // Keyboard
-      this.input.keyboard.once('keydown-SPACE', () => this.startGame(saveData));
-      this.input.keyboard.once('keydown-N', () => this.startGame(resetSave()));
-    } else {
-      // First time — simple start
-      const prompt = this.add.text(cx, cy + 80, 'Press any key to start', {
+      // How to Play button
+      const helpBtn = this.add.text(cx, cy + 130, 'How to Play', {
         fontFamily: 'Arial, sans-serif',
         fontSize: '16px',
+        color: '#5577AA'
+      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+
+      helpBtn.on('pointerdown', () => this.showTutorial(saveData));
+      helpBtn.on('pointerover', () => helpBtn.setColor('#88BBEE'));
+      helpBtn.on('pointerout', () => helpBtn.setColor('#5577AA'));
+
+      // Keyboard
+      this.input.keyboard.once('keydown-SPACE', () => this.startGame(saveData));
+      this.input.keyboard.once('keydown-N', () => this.startTutorial(resetSave()));
+    } else {
+      // First time — go to tutorial
+      const prompt = this.add.text(cx, cy + 80, 'Press any key to begin', {
+        fontFamily: 'Arial, sans-serif',
+        fontSize: '18px',
         color: '#aaaacc'
       }).setOrigin(0.5);
 
@@ -100,10 +111,26 @@ export default class BootScene extends Phaser.Scene {
         repeat: -1
       });
 
-      const startNew = () => this.startGame(saveData);
+      const startNew = () => this.startTutorial(saveData);
       this.input.keyboard.once('keydown', startNew);
       this.input.once('pointerdown', startNew);
     }
+  }
+
+  startTutorial(saveData) {
+    audio.init();
+    this.cameras.main.fadeOut(500, 0, 0, 0);
+    this.cameras.main.once('camerafadeoutcomplete', () => {
+      this.scene.start('TutorialScene', { saveData, returnTo: 'FishingScene' });
+    });
+  }
+
+  showTutorial(saveData) {
+    audio.init();
+    this.cameras.main.fadeOut(500, 0, 0, 0);
+    this.cameras.main.once('camerafadeoutcomplete', () => {
+      this.scene.start('TutorialScene', { saveData, returnTo: 'FishingScene' });
+    });
   }
 
   startGame(saveData) {

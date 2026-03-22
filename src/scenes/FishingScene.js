@@ -37,6 +37,10 @@ export default class FishingScene extends Phaser.Scene {
     } else {
       this.saveData = loadGame();
     }
+    // Initialize hints tracking
+    if (!this.saveData.hintsShown) {
+      this.saveData.hintsShown = {};
+    }
   }
 
   create() {
@@ -71,12 +75,23 @@ export default class FishingScene extends Phaser.Scene {
     this.isReeling = false;
     this.fightStartTime = 0;
 
+    // Hint text (for contextual tips)
+    this.hintText = this.add.text(GAME.WIDTH / 2, GAME.HEIGHT / 2 + 40, '', {
+      fontFamily: 'Arial, sans-serif',
+      fontSize: '15px',
+      fontStyle: 'italic',
+      color: '#AADDFF',
+      stroke: '#000000',
+      strokeThickness: 2,
+      align: 'center'
+    }).setOrigin(0.5).setDepth(20).setVisible(false).setAlpha(0);
+
     // === HUD ===
 
     // Main prompt
     this.promptText = this.add.text(GAME.WIDTH / 2, 30, 'Press SPACE to cast', {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '18px',
+      fontSize: '20px',
       color: '#ffffff',
       stroke: '#000000',
       strokeThickness: 3
@@ -85,7 +100,7 @@ export default class FishingScene extends Phaser.Scene {
     // Rating text (center)
     this.ratingText = this.add.text(GAME.WIDTH / 2, GAME.HEIGHT / 2 - 60, '', {
       fontFamily: 'Georgia, "Times New Roman", serif',
-      fontSize: '36px',
+      fontSize: '38px',
       fontStyle: 'bold',
       color: '#ffffff',
       stroke: '#000000',
@@ -95,7 +110,7 @@ export default class FishingScene extends Phaser.Scene {
     // Distance text
     this.distanceText = this.add.text(GAME.WIDTH / 2, GAME.HEIGHT / 2 - 20, '', {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '16px',
+      fontSize: '18px',
       color: '#C2B280',
       stroke: '#000000',
       strokeThickness: 2
@@ -104,15 +119,15 @@ export default class FishingScene extends Phaser.Scene {
     // Top-left: catch counter + money
     this.catchCountText = this.add.text(10, 10, '', {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '13px',
+      fontSize: '15px',
       color: '#7777AA',
       stroke: '#000000',
       strokeThickness: 2
     }).setDepth(20);
 
-    this.moneyText = this.add.text(10, 28, '', {
+    this.moneyText = this.add.text(10, 30, '', {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '13px',
+      fontSize: '15px',
       fontStyle: 'bold',
       color: '#FFD700',
       stroke: '#000000',
@@ -122,24 +137,24 @@ export default class FishingScene extends Phaser.Scene {
     // Top-right: time & weather HUD
     this.timeText = this.add.text(GAME.WIDTH - 10, 10, '', {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '14px',
+      fontSize: '16px',
       fontStyle: 'bold',
       color: '#CCCCEE',
       stroke: '#000000',
       strokeThickness: 2
     }).setOrigin(1, 0).setDepth(20);
 
-    this.weatherText = this.add.text(GAME.WIDTH - 10, 28, '', {
+    this.weatherText = this.add.text(GAME.WIDTH - 10, 30, '', {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '12px',
+      fontSize: '14px',
       color: '#88AACC',
       stroke: '#000000',
       strokeThickness: 2
     }).setOrigin(1, 0).setDepth(20);
 
-    this.dayText = this.add.text(GAME.WIDTH - 10, 44, '', {
+    this.dayText = this.add.text(GAME.WIDTH - 10, 48, '', {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '11px',
+      fontSize: '13px',
       color: '#666688',
       stroke: '#000000',
       strokeThickness: 1
@@ -148,7 +163,7 @@ export default class FishingScene extends Phaser.Scene {
     // Gear info (bottom-left)
     this.gearText = this.add.text(10, GAME.HEIGHT - 15, '', {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '10px',
+      fontSize: '12px',
       color: '#555577',
       stroke: '#000000',
       strokeThickness: 1
@@ -203,12 +218,15 @@ export default class FishingScene extends Phaser.Scene {
     });
 
     this.state = STATES.IDLE;
+
+    // Show first-time cast hint
+    this.showHintIfNew('first_cast', 'Tip: Aim for the green zone\non the power bar for a perfect cast!', 4000);
   }
 
   createMenuButton(x, y, label, callback) {
     const btn = this.add.text(x, y, `[${label}]`, {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '12px',
+      fontSize: '14px',
       fontStyle: 'bold',
       color: '#666688',
       stroke: '#000000',
@@ -219,6 +237,31 @@ export default class FishingScene extends Phaser.Scene {
     btn.on('pointerover', () => btn.setColor('#FFFFFF'));
     btn.on('pointerout', () => btn.setColor('#666688'));
     return btn;
+  }
+
+  // === CONTEXTUAL HINTS ===
+
+  showHintIfNew(hintId, text, duration = 3500) {
+    if (this.saveData.hintsShown[hintId]) return;
+    this.saveData.hintsShown[hintId] = true;
+
+    this.hintText.setText(text);
+    this.hintText.setVisible(true);
+    this.tweens.add({
+      targets: this.hintText,
+      alpha: 1,
+      duration: 400,
+      onComplete: () => {
+        this.time.delayedCall(duration, () => {
+          this.tweens.add({
+            targets: this.hintText,
+            alpha: 0,
+            duration: 600,
+            onComplete: () => this.hintText.setVisible(false)
+          });
+        });
+      }
+    });
   }
 
   handleInput() {
@@ -480,6 +523,9 @@ export default class FishingScene extends Phaser.Scene {
     this.promptText.setColor('#FF4444');
     this.promptText.setScale(1.2);
 
+    // Show bite hint
+    this.showHintIfNew('first_bite', 'Quick! Press SPACE to hook the fish!', 1400);
+
     const hookWindowMs = 1500;
     this.hookWindow = this.time.delayedCall(hookWindowMs, () => {
       this.missedBite();
@@ -535,10 +581,16 @@ export default class FishingScene extends Phaser.Scene {
     this.tensionBar.configure(this.currentFish, bonuses);
     this.tensionBar.show();
 
+    // Setup visible fighting fish
+    this.fishingRod.setupFightingFish(this.currentFish);
+
     this.promptText.setText('Hold SPACE to reel! Keep tension in the green zone!');
     this.promptText.setColor('#44DDFF');
-    this.promptText.setFontSize(15);
+    this.promptText.setFontSize(16);
     this.distanceText.setVisible(false);
+
+    // Show reel hint
+    this.showHintIfNew('first_reel', 'Keep the marker in the green center.\nToo high = line snaps! Too low = fish escapes!', 4000);
   }
 
   updateReeling(delta) {
@@ -547,9 +599,20 @@ export default class FishingScene extends Phaser.Scene {
 
     const result = this.tensionBar.update(delta, reeling);
 
+    // Update the fighting fish visual
+    this.fishingRod.updateFightingFish(
+      this.tensionBar.pullDirection,
+      this.tensionBar.fishEnergy,
+      this.tensionBar.reelProgress,
+      delta
+    );
+
+    // Update bobber wobble based on fish pull
     if (this.fishingRod.bobberVisible) {
-      const wobble = Math.sin(Date.now() * 0.008) * 3 * this.tensionBar.fishEnergy;
-      this.fishingRod.hookX = this.fishingRod.hookX + (wobble - this.fishingRod.hookX) * 0.01;
+      const wobble = Math.sin(Date.now() * 0.008) * 4 * this.tensionBar.fishEnergy;
+      const vertWobble = Math.cos(Date.now() * 0.006) * 2 * this.tensionBar.fishEnergy;
+      this.fishingRod.hookX += (wobble * 0.3);
+      this.fishingRod.hookY += (vertWobble * 0.1);
     }
 
     this.fishingRod.drawLine();
@@ -563,7 +626,8 @@ export default class FishingScene extends Phaser.Scene {
 
   onFishCaught() {
     this.tensionBar.hide();
-    this.promptText.setFontSize(18);
+    this.fishingRod.hideFightingFish();
+    this.promptText.setFontSize(20);
 
     // Track fight duration
     const fightDuration = (Date.now() - this.fightStartTime) / 1000;
@@ -620,12 +684,18 @@ export default class FishingScene extends Phaser.Scene {
 
     audio.playCatch();
 
-    // Check achievements
+    // Check achievements — only show the top 1 as popup, pass rest to CatchScene
     const newAchievements = checkAchievements(this.saveData);
-    newAchievements.forEach(ach => {
+    const extraAchievements = [];
+    newAchievements.forEach((ach, i) => {
       this.saveData.achievements.push(ach.id);
-      this.achievementPopup.show(ach);
-      audio.playAchievement();
+      if (i === 0) {
+        // Show only the most important achievement as a popup
+        this.achievementPopup.show(ach);
+        audio.playAchievement();
+      } else {
+        extraAchievements.push(ach);
+      }
     });
 
     // Auto-save
@@ -637,7 +707,8 @@ export default class FishingScene extends Phaser.Scene {
       this.scene.start('CatchScene', {
         fish: this.currentFish,
         saveData: this.saveData,
-        isNewRecord
+        isNewRecord,
+        extraAchievements
       });
     });
   }
@@ -645,7 +716,8 @@ export default class FishingScene extends Phaser.Scene {
   onLineSnapped() {
     this.state = STATES.RESULT;
     this.tensionBar.hide();
-    this.promptText.setFontSize(18);
+    this.fishingRod.hideFightingFish();
+    this.promptText.setFontSize(20);
 
     this.saveData.stats.totalLineSnaps = (this.saveData.stats.totalLineSnaps || 0) + 1;
     this.saveData.stats.totalFishLost = (this.saveData.stats.totalFishLost || 0) + 1;
@@ -693,7 +765,7 @@ export default class FishingScene extends Phaser.Scene {
     this.distanceText.setVisible(false);
     this.promptText.setText('Press SPACE to cast');
     this.promptText.setColor('#ffffff');
-    this.promptText.setFontSize(18);
+    this.promptText.setFontSize(20);
     this.promptText.setScale(1);
 
     this.updateHUD();

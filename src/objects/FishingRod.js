@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { COLORS, ROD_CONFIG, CAST, CAST_ARC, WATER_LINE_Y } from '../constants.js';
+import { COLORS, ROD_CONFIG, CAST, CAST_ARC, WATER_LINE_Y, GAME } from '../constants.js';
 import { audio } from './AudioManager.js';
 
 export default class FishingRod {
@@ -15,6 +15,19 @@ export default class FishingRod {
     this.hookY = this.tipY;
     this.bobberVisible = false;
     this.casting = false;
+
+    // Fighting fish visual state
+    this.fishGfx = scene.add.graphics();
+    this.fishGfx.setDepth(3);
+    this.fishVisible = false;
+    this.fishX = 0;
+    this.fishY = 0;
+    this.fishTargetX = 0;
+    this.fishTargetY = 0;
+    this.fishDirection = 1; // 1 = facing right, -1 = facing left
+    this.fishColor = 0x4488AA;
+    this.fishAccentColor = 0x66AACC;
+    this.fishSize = 1;
 
     // Graphics layers
     this.rodGfx = scene.add.graphics();
@@ -86,6 +99,141 @@ export default class FishingRod {
     // Bobber stick
     this.lineGfx.lineStyle(1, 0x333333, 1);
     this.lineGfx.lineBetween(x, y - 10, x, y + 6);
+  }
+
+  // === FIGHTING FISH VISUAL ===
+
+  setupFightingFish(fishInstance) {
+    this.fishVisible = true;
+    this.fishColor = fishInstance.color;
+    this.fishAccentColor = fishInstance.accentColor;
+    this.fishSize = 0.6 + fishInstance.weight * 0.08;
+    this.fishSize = Math.min(this.fishSize, 2.5);
+    this.fishX = this.hookX;
+    this.fishY = this.hookY + 25;
+    this.fishTargetX = this.fishX;
+    this.fishTargetY = this.fishY;
+    this.fishDirection = -1;
+  }
+
+  updateFightingFish(pullDirection, fishEnergy, reelProgress, delta) {
+    if (!this.fishVisible) return;
+
+    const dt = Math.min(delta, 33) / 1000;
+
+    // Calculate target position based on pull direction and reel progress
+    const baseX = this.hookX;
+    const baseY = this.hookY + 20 + (1 - reelProgress) * 30;
+
+    // Horizontal movement based on pull direction
+    const moveRange = 80 * fishEnergy;
+    const vertRange = 30 * fishEnergy;
+
+    // Use time-based smooth movement for organic feel
+    const t = Date.now() * 0.001;
+    const swimOscX = Math.sin(t * 2.5) * 15 * fishEnergy;
+    const swimOscY = Math.sin(t * 1.8 + 1) * 8 * fishEnergy;
+
+    if (pullDirection === 1) {
+      // Fish pulling away (to the right / deeper)
+      this.fishTargetX = baseX + moveRange * 0.6 + swimOscX;
+      this.fishTargetY = baseY + vertRange * 0.5 + swimOscY;
+    } else if (pullDirection === -1) {
+      // Fish pulling toward player (left / shallower)
+      this.fishTargetX = baseX - moveRange * 0.4 + swimOscX;
+      this.fishTargetY = baseY - vertRange * 0.3 + swimOscY;
+    } else {
+      // Neutral — gentle drifting
+      this.fishTargetX = baseX + swimOscX * 1.5;
+      this.fishTargetY = baseY + swimOscY;
+    }
+
+    // Clamp fish to stay within screen and below water
+    this.fishTargetX = Math.max(50, Math.min(GAME.WIDTH - 30, this.fishTargetX));
+    this.fishTargetY = Math.max(WATER_LINE_Y + 10, Math.min(GAME.HEIGHT - 20, this.fishTargetY));
+
+    // Smooth lerp toward target
+    const lerpSpeed = 3 * dt;
+    this.fishX += (this.fishTargetX - this.fishX) * lerpSpeed;
+    this.fishY += (this.fishTargetY - this.fishY) * lerpSpeed;
+
+    // Update facing direction based on movement
+    const dx = this.fishTargetX - this.fishX;
+    if (Math.abs(dx) > 1) {
+      this.fishDirection = dx > 0 ? 1 : -1;
+    }
+
+    this.drawFightingFish();
+  }
+
+  drawFightingFish() {
+    this.fishGfx.clear();
+    if (!this.fishVisible) return;
+
+    const x = this.fishX;
+    const y = this.fishY;
+    const s = this.fishSize;
+    const dir = this.fishDirection;
+
+    // Underwater darkening — fish is slightly transparent
+    const alpha = 0.7;
+
+    // Water ripples above fish
+    const rippleY = WATER_LINE_Y + 5;
+    if (y < WATER_LINE_Y + 60) {
+      const rippleAlpha = 0.15 * (1 - (y - WATER_LINE_Y) / 60);
+      this.fishGfx.lineStyle(1, 0xAADDEE, rippleAlpha);
+      this.fishGfx.strokeCircle(x, rippleY, 8 + Math.sin(Date.now() * 0.005) * 3);
+      this.fishGfx.strokeCircle(x, rippleY, 14 + Math.sin(Date.now() * 0.004 + 1) * 4);
+    }
+
+    // Fish shadow (deeper = more offset)
+    const shadowDepth = (y - WATER_LINE_Y) * 0.05;
+    this.fishGfx.fillStyle(0x000000, 0.08);
+    this.fishGfx.fillEllipse(x + shadowDepth, y + 8 * s, 22 * s, 6 * s);
+
+    // Body
+    const bodyW = 20 * s;
+    const bodyH = 10 * s;
+    this.fishGfx.fillStyle(this.fishColor, alpha);
+    this.fishGfx.fillEllipse(x, y, bodyW, bodyH);
+
+    // Accent stripe
+    this.fishGfx.fillStyle(this.fishAccentColor, alpha * 0.5);
+    this.fishGfx.fillEllipse(x, y + bodyH * 0.08, bodyW * 0.8, bodyH * 0.35);
+
+    // Tail fin
+    const tailX = x - dir * bodyW * 0.55;
+    this.fishGfx.fillStyle(this.fishColor, alpha * 0.85);
+    this.fishGfx.fillTriangle(
+      tailX, y,
+      tailX - dir * 8 * s, y - 5 * s,
+      tailX - dir * 8 * s, y + 5 * s
+    );
+
+    // Dorsal fin
+    this.fishGfx.fillStyle(this.fishAccentColor, alpha * 0.6);
+    this.fishGfx.fillTriangle(
+      x + dir * 2 * s, y - bodyH * 0.5,
+      x - dir * 3 * s, y - bodyH * 0.5 - 5 * s,
+      x - dir * 6 * s, y - bodyH * 0.5
+    );
+
+    // Eye
+    const eyeX = x + dir * bodyW * 0.3;
+    this.fishGfx.fillStyle(0xFFFFFF, alpha);
+    this.fishGfx.fillCircle(eyeX, y - 1.5 * s, 2.5 * s);
+    this.fishGfx.fillStyle(0x111111, alpha);
+    this.fishGfx.fillCircle(eyeX + dir * 0.5, y - 1.5 * s, 1.2 * s);
+
+    // Line from bobber to fish (thin leader line)
+    this.fishGfx.lineStyle(1, COLORS.LINE, 0.3);
+    this.fishGfx.lineBetween(this.hookX, this.hookY + 6, x, y);
+  }
+
+  hideFightingFish() {
+    this.fishVisible = false;
+    this.fishGfx.clear();
   }
 
   playCastAnimation(accuracy, onComplete) {
@@ -169,7 +317,7 @@ export default class FishingRod {
     }
 
     let elapsed = 0;
-    const splashTween = this.scene.tweens.addCounter({
+    this.scene.tweens.addCounter({
       from: 0,
       to: 1,
       duration: 400,
@@ -200,6 +348,7 @@ export default class FishingRod {
     const counter = { t: 0 };
 
     this.bobberVisible = false;
+    this.hideFightingFish();
 
     this.scene.tweens.add({
       targets: counter,
@@ -225,11 +374,13 @@ export default class FishingRod {
     this.hookX = this.tipX;
     this.hookY = this.tipY;
     this.lineGfx.clear();
+    this.hideFightingFish();
     this.drawRod();
   }
 
   destroy() {
     this.rodGfx.destroy();
     this.lineGfx.destroy();
+    this.fishGfx.destroy();
   }
 }

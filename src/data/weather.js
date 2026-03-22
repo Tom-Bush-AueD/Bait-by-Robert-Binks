@@ -77,13 +77,13 @@ export const TIME_PERIODS = [
   { id: 'night', name: 'Night', hour: 21, biteModifier: 0.6, rarityModifier: 1.5, skyColor: 0x111133, skyAlpha: 0.45 }
 ];
 
-// In-game clock: 1 real second = 1 in-game minute
-// A full day cycle takes 24 real minutes
+// In-game clock: 1 real second = 4 in-game minutes
+// A full day cycle takes 6 real minutes
 export class GameClock {
   constructor(startHour = 6) {
     this.gameMinutes = startHour * 60; // total minutes since midnight
     this.dayCount = 1;
-    this.speed = 1; // minutes per real second
+    this.speed = 4; // minutes per real second (24h in 6 real minutes)
   }
 
   update(deltaSec) {
@@ -130,7 +130,7 @@ export class WeatherSystem {
     this.current = WEATHER_TYPES[0]; // start sunny
     this.forecast = [];
     this.changeTimer = 0;
-    this.changeInterval = 180000; // weather changes every ~3 real minutes
+    this.changeInterval = 60000; // weather changes every ~1 real minute
     this.generateForecast();
   }
 

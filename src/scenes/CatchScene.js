@@ -13,6 +13,7 @@ export default class CatchScene extends Phaser.Scene {
     this.caughtFish = data.fish;
     this.saveData = data.saveData;
     this.isNewRecord = data.isNewRecord || false;
+    this.extraAchievements = data.extraAchievements || [];
   }
 
   create() {
@@ -44,7 +45,7 @@ export default class CatchScene extends Phaser.Scene {
     // Fish name
     this.add.text(cx, 290, this.caughtFish.species, {
       fontFamily: 'Georgia, "Times New Roman", serif',
-      fontSize: '32px',
+      fontSize: '34px',
       fontStyle: 'bold',
       color: '#FFFFFF',
       stroke: '#000000',
@@ -54,7 +55,7 @@ export default class CatchScene extends Phaser.Scene {
     // Rarity tag
     this.add.text(cx, 325, this.caughtFish.rarity.toUpperCase(), {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '14px',
+      fontSize: '16px',
       fontStyle: 'bold',
       color: rarityColor,
       stroke: '#000000',
@@ -64,7 +65,7 @@ export default class CatchScene extends Phaser.Scene {
     // Weight
     this.add.text(cx, 355, `${this.caughtFish.weight} kg`, {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '22px',
+      fontSize: '24px',
       color: '#C2B280',
       stroke: '#000000',
       strokeThickness: 2
@@ -72,19 +73,20 @@ export default class CatchScene extends Phaser.Scene {
 
     // Sell value
     const sellPrice = getFishSellPrice(this.caughtFish);
-    this.add.text(cx, 380, `Value: ${sellPrice} coins`, {
+    this.add.text(cx, 382, `Value: ${sellPrice} coins`, {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '14px',
+      fontSize: '16px',
       color: '#FFD700',
       stroke: '#000000',
       strokeThickness: 2
     }).setOrigin(0.5);
 
     // New record badge
+    let nextY = 410;
     if (this.isNewRecord) {
-      const recordText = this.add.text(cx, 405, 'NEW RECORD!', {
+      const recordText = this.add.text(cx, nextY, 'NEW RECORD!', {
         fontFamily: 'Arial, sans-serif',
-        fontSize: '16px',
+        fontSize: '18px',
         fontStyle: 'bold',
         color: '#FFDD44',
         stroke: '#000000',
@@ -98,26 +100,43 @@ export default class CatchScene extends Phaser.Scene {
         yoyo: true,
         repeat: -1
       });
+      nextY += 25;
     }
 
     // Description
-    this.add.text(cx, 430, `"${this.caughtFish.description}"`, {
+    this.add.text(cx, nextY, `"${this.caughtFish.description}"`, {
       fontFamily: 'Georgia, "Times New Roman", serif',
-      fontSize: '14px',
+      fontSize: '15px',
       fontStyle: 'italic',
       color: '#8888AA',
       stroke: '#000000',
       strokeThickness: 1
     }).setOrigin(0.5);
+    nextY += 28;
+
+    // Extra achievements summary (if any)
+    if (this.extraAchievements.length > 0) {
+      const names = this.extraAchievements.map(a => a.name).join(', ');
+      this.add.text(cx, nextY, `+${this.extraAchievements.length} more: ${names}`, {
+        fontFamily: 'Arial, sans-serif',
+        fontSize: '14px',
+        fontStyle: 'bold',
+        color: '#FFD700',
+        stroke: '#000000',
+        strokeThickness: 2
+      }).setOrigin(0.5);
+      nextY += 22;
+    }
 
     // Money display
-    this.add.text(cx, 460, `Money: ${this.saveData.money} coins`, {
+    this.add.text(cx, nextY, `Money: ${this.saveData.money} coins`, {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '13px',
+      fontSize: '15px',
       color: '#FFD700',
       stroke: '#000000',
       strokeThickness: 1
     }).setOrigin(0.5);
+    nextY += 22;
 
     // Catch stats
     const uniqueSpecies = Object.keys(this.saveData.encyclopedia).filter(
@@ -125,27 +144,29 @@ export default class CatchScene extends Phaser.Scene {
     ).length;
     const totalCatches = this.saveData.stats.totalCatches || 0;
 
-    this.add.text(cx, 485, `Total catches: ${totalCatches}  |  Species found: ${uniqueSpecies}/7`, {
+    this.add.text(cx, nextY, `Total catches: ${totalCatches}  |  Species found: ${uniqueSpecies}/7`, {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '14px',
+      fontSize: '15px',
       color: '#7777AA',
       stroke: '#000000',
       strokeThickness: 1
     }).setOrigin(0.5);
 
     // Action buttons
-    const continueBtn = this.add.text(cx - 80, 530, 'Continue', {
+    const btnY = Math.max(nextY + 40, 530);
+
+    const continueBtn = this.add.text(cx - 80, btnY, 'Continue', {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '16px',
+      fontSize: '18px',
       fontStyle: 'bold',
       color: '#88AACC',
       stroke: '#000000',
       strokeThickness: 2
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
-    const shopBtn = this.add.text(cx + 80, 530, 'Go to Shop', {
+    const shopBtn = this.add.text(cx + 80, btnY, 'Go to Shop', {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '16px',
+      fontSize: '18px',
       fontStyle: 'bold',
       color: '#FFD700',
       stroke: '#000000',
@@ -165,9 +186,9 @@ export default class CatchScene extends Phaser.Scene {
     this.input.keyboard.once('keydown-S', () => this.goShop());
 
     // Prompt hint
-    this.add.text(cx, 560, 'SPACE: continue  |  S: shop', {
+    this.add.text(cx, btnY + 28, 'SPACE: continue  |  S: shop', {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '11px',
+      fontSize: '13px',
       color: '#555577'
     }).setOrigin(0.5);
   }
