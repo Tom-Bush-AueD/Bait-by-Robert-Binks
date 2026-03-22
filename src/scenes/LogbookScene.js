@@ -153,7 +153,7 @@ export default class LogbookScene extends Phaser.Scene {
           this.add.text(100, y + 32, species.description, {
             fontFamily: 'Arial, sans-serif',
             fontSize: '10px',
-            color: '#888899'
+            color: '#BBBBCC'
           })
         );
 
@@ -178,7 +178,7 @@ export default class LogbookScene extends Phaser.Scene {
           this.add.text(GAME.WIDTH - 55, y + 38, `${species.minWeight}-${species.maxWeight} kg`, {
             fontFamily: 'Arial, sans-serif',
             fontSize: '10px',
-            color: '#666688'
+            color: '#AABBCC'
           }).setOrigin(1, 0)
         );
       } else {
@@ -187,7 +187,7 @@ export default class LogbookScene extends Phaser.Scene {
           this.add.text(75, y + 15, '???', {
             fontFamily: 'Georgia, "Times New Roman", serif',
             fontSize: '20px',
-            color: '#333355'
+            color: '#667788'
           }).setOrigin(0.5)
         );
 
@@ -195,7 +195,7 @@ export default class LogbookScene extends Phaser.Scene {
           this.add.text(100, y + 15, 'Undiscovered Species', {
             fontFamily: 'Arial, sans-serif',
             fontSize: '14px',
-            color: '#444466'
+            color: '#778899'
           })
         );
       }
@@ -212,7 +212,7 @@ export default class LogbookScene extends Phaser.Scene {
         this.add.text(GAME.WIDTH / 2, 200, 'No entries yet.\nCatch some fish!', {
           fontFamily: 'Arial, sans-serif',
           fontSize: '18px',
-          color: '#666688',
+          color: '#AABBCC',
           align: 'center'
         }).setOrigin(0.5)
       );
@@ -247,7 +247,7 @@ export default class LogbookScene extends Phaser.Scene {
         this.add.text(55, y + 20, details.join(' | '), {
           fontFamily: 'Arial, sans-serif',
           fontSize: '11px',
-          color: '#666688'
+          color: '#AABBCC'
         })
       );
 
@@ -267,7 +267,7 @@ export default class LogbookScene extends Phaser.Scene {
         this.add.text(GAME.WIDTH / 2, y + 10, `${log.length} total entries`, {
           fontFamily: 'Arial, sans-serif',
           fontSize: '12px',
-          color: '#555577'
+          color: '#AABBCC'
         }).setOrigin(0.5)
       );
     }
@@ -351,7 +351,7 @@ export default class LogbookScene extends Phaser.Scene {
         this.add.text(cx - 120, y, label, {
           fontFamily: 'Arial, sans-serif',
           fontSize: '15px',
-          color: '#888899'
+          color: '#BBBBCC'
         })
       );
 

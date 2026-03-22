@@ -7,14 +7,18 @@ import CatchScene from './scenes/CatchScene.js';
 import ShopScene from './scenes/ShopScene.js';
 import LogbookScene from './scenes/LogbookScene.js';
 
+// Use device pixel ratio for crisp text on high-DPI screens
+const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
 export default {
-  type: Phaser.AUTO,
+  type: Phaser.WEBGL,
   width: GAME.WIDTH,
   height: GAME.HEIGHT,
   parent: 'game-container',
   backgroundColor: '#1a1a2e',
   antialias: true,
-  roundPixels: true,
+  roundPixels: false,
+  resolution: dpr,
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH

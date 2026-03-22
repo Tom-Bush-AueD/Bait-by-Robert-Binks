@@ -106,11 +106,11 @@ export default class CatchScene extends Phaser.Scene {
     // Description
     this.add.text(cx, nextY, `"${this.caughtFish.description}"`, {
       fontFamily: 'Georgia, "Times New Roman", serif',
-      fontSize: '15px',
+      fontSize: '16px',
       fontStyle: 'italic',
-      color: '#8888AA',
+      color: '#CCCCDD',
       stroke: '#000000',
-      strokeThickness: 1
+      strokeThickness: 2
     }).setOrigin(0.5);
     nextY += 28;
 
@@ -119,11 +119,11 @@ export default class CatchScene extends Phaser.Scene {
       const names = this.extraAchievements.map(a => a.name).join(', ');
       this.add.text(cx, nextY, `+${this.extraAchievements.length} more: ${names}`, {
         fontFamily: 'Arial, sans-serif',
-        fontSize: '14px',
+        fontSize: '15px',
         fontStyle: 'bold',
-        color: '#FFD700',
+        color: '#FFE44D',
         stroke: '#000000',
-        strokeThickness: 2
+        strokeThickness: 3
       }).setOrigin(0.5);
       nextY += 22;
     }
@@ -131,10 +131,11 @@ export default class CatchScene extends Phaser.Scene {
     // Money display
     this.add.text(cx, nextY, `Money: ${this.saveData.money} coins`, {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '15px',
-      color: '#FFD700',
+      fontSize: '16px',
+      fontStyle: 'bold',
+      color: '#FFE44D',
       stroke: '#000000',
-      strokeThickness: 1
+      strokeThickness: 3
     }).setOrigin(0.5);
     nextY += 22;
 
@@ -146,10 +147,11 @@ export default class CatchScene extends Phaser.Scene {
 
     this.add.text(cx, nextY, `Total catches: ${totalCatches}  |  Species found: ${uniqueSpecies}/7`, {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '15px',
-      color: '#7777AA',
+      fontSize: '16px',
+      fontStyle: 'bold',
+      color: '#DDDDEF',
       stroke: '#000000',
-      strokeThickness: 1
+      strokeThickness: 3
     }).setOrigin(0.5);
 
     // Action buttons
@@ -157,29 +159,29 @@ export default class CatchScene extends Phaser.Scene {
 
     const continueBtn = this.add.text(cx - 80, btnY, 'Continue', {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '18px',
+      fontSize: '20px',
       fontStyle: 'bold',
-      color: '#88AACC',
+      color: '#FFFFFF',
       stroke: '#000000',
-      strokeThickness: 2
+      strokeThickness: 3
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
     const shopBtn = this.add.text(cx + 80, btnY, 'Go to Shop', {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '18px',
+      fontSize: '20px',
       fontStyle: 'bold',
-      color: '#FFD700',
+      color: '#FFE44D',
       stroke: '#000000',
-      strokeThickness: 2
+      strokeThickness: 3
     }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
     continueBtn.on('pointerdown', () => this.goFishing());
-    continueBtn.on('pointerover', () => continueBtn.setColor('#FFFFFF'));
-    continueBtn.on('pointerout', () => continueBtn.setColor('#88AACC'));
+    continueBtn.on('pointerover', () => continueBtn.setColor('#88DDFF'));
+    continueBtn.on('pointerout', () => continueBtn.setColor('#FFFFFF'));
 
     shopBtn.on('pointerdown', () => this.goShop());
     shopBtn.on('pointerover', () => shopBtn.setColor('#FFFFFF'));
-    shopBtn.on('pointerout', () => shopBtn.setColor('#FFD700'));
+    shopBtn.on('pointerout', () => shopBtn.setColor('#FFE44D'));
 
     // Keyboard: SPACE to continue, S for shop
     this.input.keyboard.once('keydown-SPACE', () => this.goFishing());
@@ -188,8 +190,10 @@ export default class CatchScene extends Phaser.Scene {
     // Prompt hint
     this.add.text(cx, btnY + 28, 'SPACE: continue  |  S: shop', {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '13px',
-      color: '#555577'
+      fontSize: '14px',
+      color: '#AABBCC',
+      stroke: '#000000',
+      strokeThickness: 2
     }).setOrigin(0.5);
   }
 

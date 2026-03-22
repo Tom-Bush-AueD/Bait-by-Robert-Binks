@@ -35,19 +35,20 @@ export default class AchievementPopup {
 
     const title = this.scene.add.text(cx, y + 5, 'Achievement Unlocked!', {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '11px',
-      color: '#FFD700',
+      fontSize: '13px',
+      fontStyle: 'bold',
+      color: '#FFE44D',
       stroke: '#000000',
-      strokeThickness: 1
+      strokeThickness: 2
     }).setOrigin(0.5).setDepth(51);
 
     const name = this.scene.add.text(cx, y + 25, ach.name, {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '15px',
+      fontSize: '17px',
       fontStyle: 'bold',
       color: '#FFFFFF',
       stroke: '#000000',
-      strokeThickness: 2
+      strokeThickness: 3
     }).setOrigin(0.5).setDepth(51);
 
     // Animate in

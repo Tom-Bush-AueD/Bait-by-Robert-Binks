@@ -121,31 +121,38 @@ export default class FishingRod {
 
     const dt = Math.min(delta, 33) / 1000;
 
-    // Calculate target position based on pull direction and reel progress
-    const baseX = this.hookX;
-    const baseY = this.hookY + 20 + (1 - reelProgress) * 30;
+    // Fish moves closer to player (dock) as reel progress increases
+    // At 0% progress, fish is far out near the bobber
+    // At 100% progress, fish is right at the bobber/dock
+    const farX = this.hookX + 60; // start position (far from dock)
+    const nearX = this.hookX - 10; // end position (near bobber)
+    const progressX = farX + (nearX - farX) * reelProgress;
 
-    // Horizontal movement based on pull direction
-    const moveRange = 80 * fishEnergy;
-    const vertRange = 30 * fishEnergy;
+    const farY = this.hookY + 40;
+    const nearY = this.hookY + 15;
+    const progressY = farY + (nearY - farY) * reelProgress;
 
-    // Use time-based smooth movement for organic feel
+    // Movement offset based on pull direction
+    const moveRange = 60 * fishEnergy;
+    const vertRange = 25 * fishEnergy;
+
+    // Organic swimming oscillation
     const t = Date.now() * 0.001;
-    const swimOscX = Math.sin(t * 2.5) * 15 * fishEnergy;
-    const swimOscY = Math.sin(t * 1.8 + 1) * 8 * fishEnergy;
+    const swimOscX = Math.sin(t * 2.5) * 12 * fishEnergy;
+    const swimOscY = Math.sin(t * 1.8 + 1) * 6 * fishEnergy;
 
     if (pullDirection === 1) {
-      // Fish pulling away (to the right / deeper)
-      this.fishTargetX = baseX + moveRange * 0.6 + swimOscX;
-      this.fishTargetY = baseY + vertRange * 0.5 + swimOscY;
+      // Fish swimming AWAY — moves right and deeper
+      this.fishTargetX = progressX + moveRange * 0.7 + swimOscX;
+      this.fishTargetY = progressY + vertRange * 0.5 + swimOscY;
     } else if (pullDirection === -1) {
-      // Fish pulling toward player (left / shallower)
-      this.fishTargetX = baseX - moveRange * 0.4 + swimOscX;
-      this.fishTargetY = baseY - vertRange * 0.3 + swimOscY;
+      // Fish swimming TOWARD player — moves left and up
+      this.fishTargetX = progressX - moveRange * 0.5 + swimOscX;
+      this.fishTargetY = progressY - vertRange * 0.4 + swimOscY;
     } else {
-      // Neutral — gentle drifting
-      this.fishTargetX = baseX + swimOscX * 1.5;
-      this.fishTargetY = baseY + swimOscY;
+      // Resting — gentle drift around progress position
+      this.fishTargetX = progressX + swimOscX * 1.2;
+      this.fishTargetY = progressY + swimOscY * 0.8;
     }
 
     // Clamp fish to stay within screen and below water

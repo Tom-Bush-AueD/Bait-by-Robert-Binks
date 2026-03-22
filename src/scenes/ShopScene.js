@@ -190,7 +190,7 @@ export default class ShopScene extends Phaser.Scene {
         this.add.text(55, y + 20, item.description, {
           fontFamily: 'Arial, sans-serif',
           fontSize: '11px',
-          color: '#888899'
+          color: '#BBBBCC'
         })
       );
 
@@ -276,7 +276,7 @@ export default class ShopScene extends Phaser.Scene {
         this.add.text(GAME.WIDTH / 2, 200, 'No fish to sell.\nGo catch some!', {
           fontFamily: 'Arial, sans-serif',
           fontSize: '18px',
-          color: '#666688',
+          color: '#AABBCC',
           align: 'center'
         }).setOrigin(0.5)
       );
@@ -355,7 +355,7 @@ export default class ShopScene extends Phaser.Scene {
         this.add.text(GAME.WIDTH / 2, y + 10, `... and ${catchLog.length - 8} more fish`, {
           fontFamily: 'Arial, sans-serif',
           fontSize: '12px',
-          color: '#555577'
+          color: '#AABBCC'
         }).setOrigin(0.5)
       );
     }
@@ -410,7 +410,7 @@ export default class ShopScene extends Phaser.Scene {
         this.add.text(95, y + 34, member.description, {
           fontFamily: 'Arial, sans-serif',
           fontSize: '11px',
-          color: '#777799'
+          color: '#AAAACC'
         })
       );
 

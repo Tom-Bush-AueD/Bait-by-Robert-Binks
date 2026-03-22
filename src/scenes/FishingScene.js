@@ -78,11 +78,11 @@ export default class FishingScene extends Phaser.Scene {
     // Hint text (for contextual tips)
     this.hintText = this.add.text(GAME.WIDTH / 2, GAME.HEIGHT / 2 + 40, '', {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '15px',
+      fontSize: '16px',
       fontStyle: 'italic',
-      color: '#AADDFF',
+      color: '#FFFFFF',
       stroke: '#000000',
-      strokeThickness: 2,
+      strokeThickness: 3,
       align: 'center'
     }).setOrigin(0.5).setDepth(20).setVisible(false).setAlpha(0);
 
@@ -91,47 +91,50 @@ export default class FishingScene extends Phaser.Scene {
     // Main prompt
     this.promptText = this.add.text(GAME.WIDTH / 2, 30, 'Press SPACE to cast', {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '20px',
-      color: '#ffffff',
+      fontSize: '22px',
+      fontStyle: 'bold',
+      color: '#FFFFFF',
       stroke: '#000000',
-      strokeThickness: 3
+      strokeThickness: 4
     }).setOrigin(0.5).setDepth(20);
 
     // Rating text (center)
     this.ratingText = this.add.text(GAME.WIDTH / 2, GAME.HEIGHT / 2 - 60, '', {
       fontFamily: 'Georgia, "Times New Roman", serif',
-      fontSize: '38px',
+      fontSize: '40px',
       fontStyle: 'bold',
-      color: '#ffffff',
+      color: '#FFFFFF',
       stroke: '#000000',
-      strokeThickness: 4
+      strokeThickness: 5
     }).setOrigin(0.5).setDepth(20).setVisible(false);
 
     // Distance text
     this.distanceText = this.add.text(GAME.WIDTH / 2, GAME.HEIGHT / 2 - 20, '', {
       fontFamily: 'Arial, sans-serif',
       fontSize: '18px',
-      color: '#C2B280',
+      fontStyle: 'bold',
+      color: '#FFFFFF',
       stroke: '#000000',
-      strokeThickness: 2
+      strokeThickness: 3
     }).setOrigin(0.5).setDepth(20).setVisible(false);
 
     // Top-left: catch counter + money
     this.catchCountText = this.add.text(10, 10, '', {
       fontFamily: 'Arial, sans-serif',
       fontSize: '15px',
-      color: '#7777AA',
+      fontStyle: 'bold',
+      color: '#FFFFFF',
       stroke: '#000000',
-      strokeThickness: 2
+      strokeThickness: 3
     }).setDepth(20);
 
     this.moneyText = this.add.text(10, 30, '', {
       fontFamily: 'Arial, sans-serif',
       fontSize: '15px',
       fontStyle: 'bold',
-      color: '#FFD700',
+      color: '#FFE44D',
       stroke: '#000000',
-      strokeThickness: 2
+      strokeThickness: 3
     }).setDepth(20);
 
     // Top-right: time & weather HUD
@@ -139,34 +142,36 @@ export default class FishingScene extends Phaser.Scene {
       fontFamily: 'Arial, sans-serif',
       fontSize: '16px',
       fontStyle: 'bold',
-      color: '#CCCCEE',
+      color: '#FFFFFF',
       stroke: '#000000',
-      strokeThickness: 2
+      strokeThickness: 3
     }).setOrigin(1, 0).setDepth(20);
 
     this.weatherText = this.add.text(GAME.WIDTH - 10, 30, '', {
       fontFamily: 'Arial, sans-serif',
       fontSize: '14px',
-      color: '#88AACC',
+      fontStyle: 'bold',
+      color: '#DDEEFF',
       stroke: '#000000',
-      strokeThickness: 2
+      strokeThickness: 3
     }).setOrigin(1, 0).setDepth(20);
 
     this.dayText = this.add.text(GAME.WIDTH - 10, 48, '', {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '13px',
-      color: '#666688',
+      fontSize: '14px',
+      fontStyle: 'bold',
+      color: '#CCDDEE',
       stroke: '#000000',
-      strokeThickness: 1
+      strokeThickness: 3
     }).setOrigin(1, 0).setDepth(20);
 
     // Gear info (bottom-left)
-    this.gearText = this.add.text(10, GAME.HEIGHT - 15, '', {
+    this.gearText = this.add.text(10, GAME.HEIGHT - 18, '', {
       fontFamily: 'Arial, sans-serif',
-      fontSize: '12px',
-      color: '#555577',
+      fontSize: '14px',
+      color: '#CCCCDD',
       stroke: '#000000',
-      strokeThickness: 1
+      strokeThickness: 3
     }).setDepth(20);
 
     this.updateHUD();
@@ -228,14 +233,14 @@ export default class FishingScene extends Phaser.Scene {
       fontFamily: 'Arial, sans-serif',
       fontSize: '14px',
       fontStyle: 'bold',
-      color: '#666688',
+      color: '#BBBBDD',
       stroke: '#000000',
-      strokeThickness: 2
+      strokeThickness: 3
     }).setOrigin(0.5).setDepth(25).setInteractive({ useHandCursor: true });
 
     btn.on('pointerdown', callback);
     btn.on('pointerover', () => btn.setColor('#FFFFFF'));
-    btn.on('pointerout', () => btn.setColor('#666688'));
+    btn.on('pointerout', () => btn.setColor('#BBBBDD'));
     return btn;
   }
 
